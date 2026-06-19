@@ -279,6 +279,7 @@ declare(strict_types=1);
 
         private function SaveSyncState(array $fileCache, array $fileQueue, string $context): bool
         {
+            ini_set('memory_limit', '-1');
             $compressedFileCache = gzencode(json_encode($fileCache, JSON_THROW_ON_ERROR));
             $fileCacheSize = strlen($compressedFileCache);
             $this->SendDebug($context, sprintf('We have %d files in your Dropbox (FileCache: %s)', count($fileCache), $this->formatBytes($fileCacheSize)), 0);
