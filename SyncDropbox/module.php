@@ -279,7 +279,6 @@ declare(strict_types=1);
 
         private function SaveSyncState(array $fileCache, array $fileQueue, string $context): bool
         {
-            ini_set('memory_limit', '-1');
             $compressedFileCache = gzencode(json_encode($fileCache, JSON_THROW_ON_ERROR));
             $fileCacheSize = strlen($compressedFileCache);
             $this->SendDebug($context, sprintf('We have %d files in your Dropbox (FileCache: %s)', count($fileCache), $this->formatBytes($fileCacheSize)), 0);
@@ -605,6 +604,7 @@ declare(strict_types=1);
 
         public function Sync()
         {
+            ini_set('memory_limit', '-1');
             $this->SetStatus(IS_ACTIVE);
 
             $this->SetTimerInterval('Sync', 0);
@@ -693,6 +693,7 @@ declare(strict_types=1);
 
         public function ReSync()
         {
+            ini_set('memory_limit', '-1');
             if (!$this->ReadPropertyBoolean('Active')) {
                 return;
             }
@@ -751,6 +752,7 @@ declare(strict_types=1);
 
         public function Upload()
         {
+            ini_set('memory_limit', '-1');
             $this->SetTimerInterval('Upload', 0);
 
             if (!$this->ReadPropertyBoolean('Active')) {
