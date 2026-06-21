@@ -120,7 +120,7 @@ declare(strict_types=1);
             return 'https://' . $this->oauthServer . '/authorize/' . $this->oauthIdentifer . '?username=' . urlencode(IPS_GetLicensee());
         }
 
-        private function FetchRefreshToken($code)
+        private function FetchRefreshToken($code): string
         {
             $this->SendDebug('FetchRefreshToken', 'Use Authentication Code to get our precious Refresh Token!', 0);
 
