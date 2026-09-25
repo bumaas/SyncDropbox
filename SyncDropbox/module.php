@@ -46,7 +46,7 @@ declare(strict_types=1);
 
             $this->RegisterPropertyInteger('UploadLimit', 5); //In Minutes
 
-            $this->RegisterVariableInteger('LastFinishedBackup', $this->Translate('Last finished backup'), 'UnixTimestamp', 0);
+            $this->RegisterVariableInteger('LastFinishedBackup', $this->Translate('Last finished backup'), '~UnixTimestamp', 0);
 
             if (!IPS_VariableProfileExists('Megabytes.Dropbox')) {
                 IPS_CreateVariableProfile('Megabytes.Dropbox', VARIABLETYPE_FLOAT);
