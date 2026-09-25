@@ -781,18 +781,23 @@ declare(strict_types=1);
 
             //Upload new files first
             if (count($fileQueue['add']) > 0) {
-                //Upload to Dropbox
-                $this->SendDebug('Upload', sprintf('Adding file... %s. Size %s', $fileQueue['add'][0], $this->formatBytes(filesize($baseDir . $fileQueue['add'][0]))), 0);
-                try {
-                    $dropbox->files->upload('/' . $this->GetDestinationFolder() . '/' . $fileQueue['add'][0], $baseDir . $fileQueue['add'][0]);
+                if (!is_file($baseDir . $fileQueue['add'][0])) {
+                    //File vanished since it was queued (e.g. temporary files like .git/AUTO_MERGE)
+                    $this->SendDebug('Upload', sprintf('Skipping file (add)... %s. File does not exist anymore', $fileQueue['add'][0]), 0);
+                } else {
+                    //Upload to Dropbox
+                    $this->SendDebug('Upload', sprintf('Adding file... %s. Size %s', $fileQueue['add'][0], $this->formatBytes(filesize($baseDir . $fileQueue['add'][0]))), 0);
+                    try {
+                        $dropbox->files->upload('/' . $this->GetDestinationFolder() . '/' . $fileQueue['add'][0], $baseDir . $fileQueue['add'][0]);
 
-                    //Add uploaded file to fileCache
-                    $fileCache[$this->StrToLower('/' . $this->GetDestinationFolder() . '/' . $fileQueue['add'][0])] = filemtime($baseDir . $fileQueue['add'][0]);
+                        //Add uploaded file to fileCache
+                        $fileCache[$this->StrToLower('/' . $this->GetDestinationFolder() . '/' . $fileQueue['add'][0])] = filemtime($baseDir . $fileQueue['add'][0]);
 
-                    //Add to upload statistic
-                    $this->SetValue('TransferredMegabytes', $this->GetValue('TransferredMegabytes') + (filesize($baseDir . $fileQueue['add'][0]) / 1024 / 1024));
-                } catch (\Exception $e) {
-                    IPS_LogMessage('SyncDropbox', sprintf('Skipping file (add) due to upload error: %s (%s)', $fileQueue['add'][0], $e->getMessage()));
+                        //Add to upload statistic
+                        $this->SetValue('TransferredMegabytes', $this->GetValue('TransferredMegabytes') + (filesize($baseDir . $fileQueue['add'][0]) / 1024 / 1024));
+                    } catch (\Exception $e) {
+                        IPS_LogMessage('SyncDropbox', sprintf('Skipping file (add) due to upload error: %s (%s)', $fileQueue['add'][0], $e->getMessage()));
+                    }
                 }
 
                 //Remove from queue (successful or skipped)
@@ -801,18 +806,23 @@ declare(strict_types=1);
                 //Start timer for next upload
                 $this->SetTimerInterval('Upload', 1000);
             } elseif (count($fileQueue['update']) > 0) {
-                //Upload to Dropbox
-                $this->SendDebug('Upload', sprintf('Updating file... %s. Size %s', $fileQueue['update'][0], $this->formatBytes(filesize($baseDir . $fileQueue['update'][0]))), 0);
-                try {
-                    $dropbox->files->upload('/' . $this->GetDestinationFolder() . '/' . $fileQueue['update'][0], $baseDir . $fileQueue['update'][0], 'overwrite');
+                if (!is_file($baseDir . $fileQueue['update'][0])) {
+                    //File vanished since it was queued (e.g. temporary files like .git/AUTO_MERGE)
+                    $this->SendDebug('Upload', sprintf('Skipping file (update)... %s. File does not exist anymore', $fileQueue['update'][0]), 0);
+                } else {
+                    //Upload to Dropbox
+                    $this->SendDebug('Upload', sprintf('Updating file... %s. Size %s', $fileQueue['update'][0], $this->formatBytes(filesize($baseDir . $fileQueue['update'][0]))), 0);
+                    try {
+                        $dropbox->files->upload('/' . $this->GetDestinationFolder() . '/' . $fileQueue['update'][0], $baseDir . $fileQueue['update'][0], 'overwrite');
 
-                    //Update uploaded file in fileCache
-                    $fileCache[$this->StrToLower('/' . $this->GetDestinationFolder() . '/' . $fileQueue['update'][0])] = filemtime($baseDir . $fileQueue['update'][0]);
+                        //Update uploaded file in fileCache
+                        $fileCache[$this->StrToLower('/' . $this->GetDestinationFolder() . '/' . $fileQueue['update'][0])] = filemtime($baseDir . $fileQueue['update'][0]);
 
-                    //Add to upload statistic
-                    $this->SetValue('TransferredMegabytes', $this->GetValue('TransferredMegabytes') + (filesize($baseDir . $fileQueue['update'][0]) / 1024 / 1024));
-                } catch (\Exception $e) {
-                    IPS_LogMessage('SyncDropbox', sprintf('Skipping file (update) due to upload error: %s (%s)', $fileQueue['update'][0], $e->getMessage()));
+                        //Add to upload statistic
+                        $this->SetValue('TransferredMegabytes', $this->GetValue('TransferredMegabytes') + (filesize($baseDir . $fileQueue['update'][0]) / 1024 / 1024));
+                    } catch (\Exception $e) {
+                        IPS_LogMessage('SyncDropbox', sprintf('Skipping file (update) due to upload error: %s (%s)', $fileQueue['update'][0], $e->getMessage()));
+                    }
                 }
 
                 //Remove from queue (successful or skipped)
