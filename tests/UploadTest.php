@@ -30,9 +30,6 @@ class UploadTest extends TestCase
         //Register our library we need for testing
         IPS\ModuleLoader::loadLibrary(__DIR__ . '/../library.json');
 
-        //System profiles are always available in Symcon, but not in the stubs
-        IPS_CreateVariableProfile('~UnixTimestamp', VARIABLETYPE_INTEGER);
-
         $this->instanceID = IPS_CreateInstance('{E3A349A9-A733-A6D6-E20E-EC87B150BEB6}');
 
         parent::setUp();
